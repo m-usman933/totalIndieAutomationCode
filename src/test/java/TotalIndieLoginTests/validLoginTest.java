@@ -1,4 +1,4 @@
-package DemoQAAccountSetup;
+package TotalIndieLoginTests;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -10,17 +10,19 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.logging.Level;
-
 import static org.testng.Assert.assertEquals;
 
-public class totalIndieLoginTest {
+public class validLoginTest {
     WebDriver driver;
     WebDriverWait wait;
+    ConfigReader config;
 
     @BeforeMethod
-    public void setup() {
+    public void setup() throws IOException {
+        config = new ConfigReader();
         // suppress Selenium logs (do this once at startup)
         System.setProperty("webdriver.chrome.silentOutput", "true");
         java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(Level.OFF);
@@ -28,26 +30,18 @@ public class totalIndieLoginTest {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.get("https://dev.totalindie.com/account/login");
-
-        // setup explicit wait (10 sec) for reuse
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-    }
-
-    @Test
-    public void testTotalIndieTitle() {
-        String title = driver.getTitle();
-        assertEquals(title, "Total-Indie", "Page title mismatch!");
     }
 
     @Test
     public void TestValidLogin() {
         // wait for email field and enter email
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[formcontrolname='email']")))
-                .sendKeys("osmansarfraz468@gmail.com");
+                .sendKeys(config.getEmail());
 
         // wait for password field and enter password
         driver.findElement(By.cssSelector("input[formcontrolname='password']"))
-                .sendKeys("12345678");
+                .sendKeys(config.getPassword());
 
         // wait for login button and click
         driver.findElement(By.cssSelector("button[type='submit']")).click();
