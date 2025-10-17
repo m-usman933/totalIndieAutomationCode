@@ -17,5 +17,6 @@ public class ConfigReader {
     public String getPassword() {
         return props.getProperty("password");
     }
+    public String getGmailPassword(){return props.getProperty("gmail.password");}
 }
 
