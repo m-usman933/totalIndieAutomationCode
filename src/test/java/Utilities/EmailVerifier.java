@@ -2,6 +2,8 @@ package Utilities;
 
 import TotalIndieLoginTests.ConfigReader;
 import jakarta.mail.*;
+import jakarta.mail.search.FlagTerm;
+
 import java.util.Properties;
 
 public class EmailVerifier
@@ -28,7 +30,17 @@ public class EmailVerifier
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             System.out.println("📩 Attempt " + attempt + " to find email...");
 
-            Message[] messages = inbox.getMessages();
+            // Refresh folder
+            if (!inbox.isOpen()) {
+                inbox.open(Folder.READ_ONLY);
+            } else {
+                inbox.close(false);
+                inbox.open(Folder.READ_ONLY);
+            }
+
+            FlagTerm unseenFlagTerm = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+            Message[] messages = inbox.search(unseenFlagTerm);
+
             for (int i = messages.length - 1; i >= 0; i--) {
                 String subject = messages[i].getSubject();
                 if (subject != null && subject.contains(expectedSubject)) {
@@ -39,12 +51,12 @@ public class EmailVerifier
                 }
             }
 
-            // Not found yet — wait before next try
             if (attempt < maxAttempts) {
                 System.out.println("⏳ Email not found yet, waiting " + waitBetweenAttempts + " seconds...");
                 Thread.sleep(waitBetweenAttempts * 1000L);
             }
         }
+
 
         System.out.println("❌ Email with subject '" + expectedSubject + "' not received after retries.");
         inbox.close(false);
