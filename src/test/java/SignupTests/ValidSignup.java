@@ -40,7 +40,6 @@ public class ValidSignup {
         java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(Level.OFF);
 
         config = new ConfigReader();
-        System.out.println("Going to launch driver now");
         System.setProperty("webdriver.chrome.silentOutput", "true");
         System.setProperty("webdriver.http.factory", "jdk-http-client");
         driver= new ChromeDriver();
